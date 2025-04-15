@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 * Fixed `/rtp` command always landing at a Z=112 coordinate in the Nether (and potentially other dimensions with nether-like heightmaps)
+* The `/spawn` command now sends players to their own spawnpoint (e.g. as set by the vanilla `/spawnpoint` command, or by other mods) instead of assuming the default overworld spawn position
 
 ## [2001.2.2]
 
