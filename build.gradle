@@ -3,6 +3,8 @@ plugins {
     id "dev.architectury.loom" version "1.3-SNAPSHOT" apply false
 }
 
+apply from: 'https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/changelog.gradle'
+
 architectury {
     minecraft = rootProject.minecraft_version
 }
@@ -27,7 +29,6 @@ allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
     apply plugin: "maven-publish"
-    apply from: "https://raw.githubusercontent.com/FTBTeam/mods-meta/main/gradle/git-md-changelog.gradle"
 
     version = project.mod_version
     group = project.maven_group
@@ -49,27 +50,17 @@ allprojects {
             url "https://maven.architectury.dev/"
             content {
                 includeGroup "dev.architectury"
-                includeGroup "me.shedaniel"
-                includeGroup "me.shedaniel.cloth"
             }
         }
         maven {
-            url "https://www.cursemaven.com"
+            url "https://maven.ftb.dev/releases"
             content {
-                includeGroup "curse.maven"
-            }
-        }
-        maven {
-            url "https://maven.saps.dev/releases"
-            content {
-                includeGroup "dev.latvian.mods"
                 includeGroup "dev.ftb.mods"
             }
         }
         maven {
-            url "https://maven.saps.dev/snapshots"
+            url "https://maven.ftb.dev/snapshots"
             content {
-                includeGroup "dev.latvian.mods"
                 includeGroup "dev.ftb.mods"
             }
         }
