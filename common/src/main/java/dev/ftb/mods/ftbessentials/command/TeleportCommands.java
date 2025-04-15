@@ -33,6 +33,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Objects;
+
 /**
  * @author LatvianModder
  */
@@ -132,8 +134,12 @@ public class TeleportCommands {
 
 	public static int spawn(ServerPlayer player) {
 		return FTBEPlayerData.getOrCreate(player).map(data -> {
-			ServerLevel level = player.server.getLevel(Level.OVERWORLD);
-			return level == null ? 0 : data.spawnTeleporter.teleport(player, p -> new TeleportPos(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), 0F)).runCommand(player);
+			ServerLevel level = player.server.getLevel(player.getRespawnDimension());
+			if (level == null) {
+				return 0;
+			}
+			BlockPos pos = Objects.requireNonNullElse(player.getRespawnPosition(), level.getSharedSpawnPos());
+			return data.spawnTeleporter.teleport(player, p -> new TeleportPos(level, pos, player.getRespawnAngle(), 0F)).runCommand(player);
 		}).orElse(0);
 	}
 
