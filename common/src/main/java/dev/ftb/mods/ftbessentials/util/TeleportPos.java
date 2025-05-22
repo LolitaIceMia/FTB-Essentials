@@ -98,6 +98,14 @@ public class TeleportPos {
 		}
 	}
 
+	public ResourceKey<Level> getDimension() {
+		return dimension;
+	}
+
+	public BlockPos getPos() {
+		return pos;
+	}
+
 	@FunctionalInterface
 	public interface TeleportResult {
 		TeleportResult SUCCESS = new TeleportResult() {
