@@ -41,6 +41,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TeleportingCommands {
     public static final TagKey<Block> IGNORE_RTP_BLOCKS = TagKey.create(Registries.BLOCK, FTBEssentials.essentialsId("ignore_rtp"));
@@ -56,6 +57,10 @@ public class TeleportingCommands {
             // Back command
             new SimpleConfigurableCommand(FTBEConfig.BACK, Commands.literal("back")
                     .executes(context -> back(context.getSource().getPlayerOrException()))),
+
+            // Playerspawn command
+            new SimpleConfigurableCommand(FTBEConfig.PLAYER_SPAWN, Commands.literal("playerspawn")
+                    .executes(context -> playerSpawn(context.getSource().getPlayerOrException()))),
 
             // Spawn command
             new SimpleConfigurableCommand(FTBEConfig.SPAWN, Commands.literal("spawn")
@@ -111,6 +116,17 @@ public class TeleportingCommands {
             }
 
             return 0;
+        }).orElse(0);
+    }
+
+    public static int playerSpawn(ServerPlayer player) {
+        return FTBEPlayerData.getOrCreate(player).map(data -> {
+            ServerLevel level = player.server.getLevel(player.getRespawnDimension());
+            if (level == null) {
+                return 0;
+            }
+            BlockPos pos = Objects.requireNonNullElse(player.getRespawnPosition(), level.getSharedSpawnPos());
+            return data.spawnTeleporter.teleport(player, p -> new TeleportPos(level, pos, player.getRespawnAngle(), 0F)).runCommand(player);
         }).orElse(0);
     }
 
