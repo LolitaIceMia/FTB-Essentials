@@ -20,6 +20,11 @@ public interface FTBEConfig {
 					"otherwise it will only register to the root namespace",
 					"This setting has no effect if 'register_to_namespace' is false");
 
+	SNBTConfig INTEGRATION = CONFIG.addGroup("integration").comment("Cross-mod integration");
+
+	BooleanValue TEAM_BASES_SPAWN_OVERRIDE = INTEGRATION.addBoolean("team_bases_spawn_override", true)
+			.comment("If true, and FTB Team Bases is installed, then the '/spawn' command will instead send players to the lobby");
+
 	SNBTConfig TELEPORTATION = CONFIG.addGroup("teleportation").comment("Teleportation-related settings");
 
 	BooleanValue ADMINS_EXEMPT_DIMENSION_BLACKLISTS = TELEPORTATION.addBoolean("admins_exempt_dimension_blacklists", true)
