@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 * If FTB Team Bases is installed, the `/spawn` command now acts as `/ftbeambases lobby`
   * Can be disabled in config (see `team_bases_spawn_override`)
+* Added optional player argument to the `/recording` and `/streaming` commands
+  * Allows status to be set for another player (op perms needed for this)
 * Added `/playerspawn` command, to send player to their personal respawn point
 * Added `ja_jp` translation (thanks @twister716)
 * Added `zh_cn` translation (thanks @SakuraBreeze)
