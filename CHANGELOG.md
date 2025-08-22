@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Added `/playerspawn` command, to send player to their personal respawn point
 * Added `ja_jp` translation (thanks @twister716)
 * Added `zh_cn` translation (thanks @SakuraBreeze)
+* Added `pt_br` translation (thanks @Xlr11)
 * Updated `fr_fr` translation (thanks @siriusbks)
+* Updated `ru_ru` translation (thanks @BazZziliuS)
 
 ### Changed
 
