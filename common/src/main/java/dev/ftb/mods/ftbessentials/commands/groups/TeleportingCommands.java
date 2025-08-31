@@ -171,7 +171,7 @@ public class TeleportingCommands {
             if (hmPos.getY() > 0) {
                 BlockPos goodPos = null;
                 // 检查该位置是否在液体中
-                if (hmPos.getY() < world.getLogicalHeight() && !world.getFluidState(hmPos.below()).is(FluidTags.WATER)) {
+                if (hmPos.getY() < world.getLogicalHeight() && !world.getFluidState(hmPos.below()).is(FluidTags.WATER)||world.getFluidState(hmPos.below()).is(FluidTags.LAVA)) {
                     goodPos = hmPos;
                 } else {
                     // broken heightmap (nether, other mod dimensions)
