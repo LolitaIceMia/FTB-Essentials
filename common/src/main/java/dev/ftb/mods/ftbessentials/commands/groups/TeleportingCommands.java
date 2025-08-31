@@ -30,6 +30,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
@@ -148,25 +149,29 @@ public class TeleportingCommands {
             int y = 256;
             int z = Mth.floor(Math.sin(angle) * dist);
             BlockPos currentPos = new BlockPos(x, y, z);
-
+            //世界边界检查
             if (!world.getWorldBorder().isWithinBounds(currentPos)) {
                 continue;
             }
+            //生物群系黑名单检查
             if (world.getBiome(currentPos).is(IGNORE_RTP_BIOMES)) {
                 continue;
             }
             // FTB Chunks (via FTB XMod Compat) listens to this.  Other mods can too.
+            //事件系统检查
             EventResult res = FTBEssentialsEvents.RTP_EVENT.invoker().teleport(world, player, currentPos, attempt);
             if (res.isFalse()) {
                 continue;
             }
 
             world.getChunkAt(currentPos);
+            //高度图检查
             BlockPos hmPos = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, currentPos);
 
             if (hmPos.getY() > 0) {
                 BlockPos goodPos = null;
-                if (hmPos.getY() < world.getLogicalHeight()) {
+                // 检查该位置是否在液体中
+                if (hmPos.getY() < world.getLogicalHeight() && !world.getFluidState(hmPos.below()).is(FluidTags.WATER)) {
                     goodPos = hmPos;
                 } else {
                     // broken heightmap (nether, other mod dimensions)
