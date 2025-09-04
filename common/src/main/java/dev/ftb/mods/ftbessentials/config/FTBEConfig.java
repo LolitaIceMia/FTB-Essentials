@@ -28,7 +28,7 @@ public interface FTBEConfig {
 					"in teleportation -> rtp -> dimension_blacklist/whitelist");
 
 	// back
-	TimedCommandConfig BACK = new TimedCommandConfig(TELEPORTATION, "back", 15, 0)
+	TimedCommandConfig BACK = new TimedCommandConfig(TELEPORTATION, "back", 30, 0)
 			.comment("Allows users to return to their previous location after teleporting (or dying)");
 	PermissionBasedIntValue MAX_BACK = new PermissionBasedIntValue(
 			BACK.config.addInt("max", 10)
