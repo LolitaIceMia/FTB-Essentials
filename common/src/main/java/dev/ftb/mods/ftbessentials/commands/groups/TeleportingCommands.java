@@ -1,9 +1,11 @@
 package dev.ftb.mods.ftbessentials.commands.groups;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.architectury.event.EventResult;
+import dev.architectury.platform.Platform;
 import dev.ftb.mods.ftbessentials.FTBEssentials;
 import dev.ftb.mods.ftbessentials.FTBEssentialsEvents;
 import dev.ftb.mods.ftbessentials.commands.CommandUtils;
@@ -15,6 +17,7 @@ import dev.ftb.mods.ftbessentials.commands.impl.teleporting.OfflineTeleportComma
 import dev.ftb.mods.ftbessentials.commands.impl.teleporting.TPACommand;
 import dev.ftb.mods.ftbessentials.commands.impl.teleporting.WarpCommand;
 import dev.ftb.mods.ftbessentials.config.FTBEConfig;
+import dev.ftb.mods.ftbessentials.integration.TeamBasesIntegration;
 import dev.ftb.mods.ftbessentials.util.BlockUtil;
 import dev.ftb.mods.ftbessentials.util.DimensionFilter;
 import dev.ftb.mods.ftbessentials.util.FTBEPlayerData;
@@ -42,6 +45,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TeleportingCommands {
     public static final TagKey<Block> IGNORE_RTP_BLOCKS = TagKey.create(Registries.BLOCK, FTBEssentials.essentialsId("ignore_rtp"));
@@ -57,6 +61,10 @@ public class TeleportingCommands {
             // Back command
             new SimpleConfigurableCommand(FTBEConfig.BACK, Commands.literal("back")
                     .executes(context -> back(context.getSource().getPlayerOrException()))),
+
+            // Playerspawn command
+            new SimpleConfigurableCommand(FTBEConfig.PLAYER_SPAWN, Commands.literal("playerspawn")
+                    .executes(context -> playerSpawn(context.getSource().getPlayerOrException()))),
 
             // Spawn command
             new SimpleConfigurableCommand(FTBEConfig.SPAWN, Commands.literal("spawn")
@@ -150,7 +158,7 @@ public class TeleportingCommands {
         BlockPos headPos = pos.above();
         BlockPos groundPos = pos.below();
 
-        // 检查脚下是否为实心方块
+ 
         BlockState groundState = world.getBlockState(groundPos);
         if (!groundState.isCollisionShapeFullBlock(world, groundPos) && !groundState.isFaceSturdy(world, groundPos, Direction.UP)) {
 
@@ -166,9 +174,23 @@ public class TeleportingCommands {
         }
 
         return !world.getFluidState(pos).is(FluidTags.LAVA) && !world.getFluidState(headPos).is(FluidTags.LAVA);
+      
+    public static int playerSpawn(ServerPlayer player) {
+        return FTBEPlayerData.getOrCreate(player).map(data -> {
+            ServerLevel level = player.server.getLevel(player.getRespawnDimension());
+            if (level == null) {
+                return 0;
+            }
+            BlockPos pos = Objects.requireNonNullElse(player.getRespawnPosition(), level.getSharedSpawnPos());
+            return data.spawnTeleporter.teleport(player, p -> new TeleportPos(level, pos, player.getRespawnAngle(), 0F)).runCommand(player);
+        }).orElse(0);
     }
 
     private static int spawn(ServerPlayer player) {
+        if (FTBEConfig.TEAM_BASES_SPAWN_OVERRIDE.get() && Platform.isModLoaded("ftbteambases")) {
+            TeamBasesIntegration.sendToLobby(player);
+            return Command.SINGLE_SUCCESS;
+        }
         return FTBEPlayerData.getOrCreate(player).map(data -> {
             ServerLevel level = player.server.getLevel(Level.OVERWORLD);
             return level == null ? 0 : data.spawnTeleporter.teleport(player, p -> new TeleportPos(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), 0F)).runCommand(player);

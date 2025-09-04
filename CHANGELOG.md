@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2101.1.7]
+
+### Added
+* If FTB Team Bases is installed, the `/spawn` command now acts as `/ftbeambases lobby`
+  * Can be disabled in config (see `team_bases_spawn_override`)
+* Added optional player argument to the `/recording` and `/streaming` commands
+  * Allows status to be set for another player (op perms needed for this)
+* Added `/playerspawn` command, to send player to their personal respawn point
+* Added `ja_jp` translation (thanks @twister716)
+* Added `zh_cn` translation (thanks @SakuraBreeze)
+* Added `pt_br` translation (thanks @Xlr11)
+* Updated `fr_fr` translation (thanks @siriusbks)
+* Updated `ru_ru` translation (thanks @BazZziliuS)
+
+### Changed
+
 ## [2101.1.6]
 
 ### Fixed
