@@ -92,5 +92,6 @@
   "ftbessentials.teleport.not_to_here": "不允许传送到该维度！",
   "ftbessentials.teleport.on_cooldown": "无法传送！冷却时间：%s",
   "ftbessentials.teleport.interrupted": "传送被中断！",
-  "ftbessentials.teleport.notify": "将在 %s 秒后传送"
+  "ftbessentials.teleport.notify": "将在 %s 秒后传送",
+  "ftbessentials.teleport.no_safe_position": "找不到安全的位置！"
 }
