@@ -20,6 +20,11 @@ public interface FTBEConfig {
 					"otherwise it will only register to the root namespace",
 					"This setting has no effect if 'register_to_namespace' is false");
 
+	SNBTConfig INTEGRATION = CONFIG.addGroup("integration").comment("Cross-mod integration");
+
+	BooleanValue TEAM_BASES_SPAWN_OVERRIDE = INTEGRATION.addBoolean("team_bases_spawn_override", true)
+			.comment("If true, and FTB Team Bases is installed, then the '/spawn' command will instead send players to the lobby");
+
 	SNBTConfig TELEPORTATION = CONFIG.addGroup("teleportation").comment("Teleportation-related settings");
 
 	BooleanValue ADMINS_EXEMPT_DIMENSION_BLACKLISTS = TELEPORTATION.addBoolean("admins_exempt_dimension_blacklists", true)
@@ -40,6 +45,7 @@ public interface FTBEConfig {
 			.comment("Should be the /back command only be used for returning to the last death point?");
 	// spawn
 	TimedCommandConfig SPAWN = new TimedCommandConfig(TELEPORTATION, "spawn", 10, 0);
+	TimedCommandConfig PLAYER_SPAWN = new TimedCommandConfig(TELEPORTATION, "playerspawn", 10, 0);
 	// warp
 	TimedCommandConfig WARP = new TimedCommandConfig(TELEPORTATION, "warp", 10, 0)
 			.comment("Allows admins to create 'warps', which are fixed points in the world that users may teleport to using /warp");
