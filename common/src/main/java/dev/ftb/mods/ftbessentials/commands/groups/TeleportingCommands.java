@@ -42,6 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Objects;
 
 public class TeleportingCommands {
     public static final TagKey<Block> IGNORE_RTP_BLOCKS = TagKey.create(Registries.BLOCK, FTBEssentials.essentialsId("ignore_rtp"));
@@ -149,8 +150,6 @@ public class TeleportingCommands {
         }
         BlockPos headPos = pos.above();
         BlockPos groundPos = pos.below();
-
-        // 检查脚下是否为实心方块
         BlockState groundState = world.getBlockState(groundPos);
         if (!groundState.isCollisionShapeFullBlock(world, groundPos) && !groundState.isFaceSturdy(world, groundPos, Direction.UP)) {
 
@@ -165,7 +164,8 @@ public class TeleportingCommands {
             return false;
         }
 
-        return !world.getFluidState(pos).is(FluidTags.LAVA) && !world.getFluidState(headPos).is(FluidTags.LAVA);
+        // Check for dangerous fluids
+        return !(world.getFluidState(pos).is(FluidTags.LAVA) || world.getFluidState(headPos).is(FluidTags.LAVA));
     }
 
     private static int spawn(ServerPlayer player) {
@@ -202,28 +202,29 @@ public class TeleportingCommands {
             int y = 256;
             int z = Mth.floor(Math.sin(angle) * dist);
             BlockPos currentPos = new BlockPos(x, y, z);
-            //世界边界检查
+            // Check world border
             if (!world.getWorldBorder().isWithinBounds(currentPos)) {
                 continue;
             }
-            //生物群系黑名单检查
+            // Biome blacklist check
             if (world.getBiome(currentPos).is(IGNORE_RTP_BIOMES)) {
                 continue;
             }
             // FTB Chunks (via FTB XMod Compat) listens to this.  Other mods can too.
-            //事件系统检查
             EventResult res = FTBEssentialsEvents.RTP_EVENT.invoker().teleport(world, player, currentPos, attempt);
             if (res.isFalse()) {
                 continue;
             }
 
             world.getChunkAt(currentPos);
-            //高度图检查
+            // Heightmap check
             BlockPos hmPos = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, currentPos);
             if (hmPos.getY() > 0) {
                 BlockPos goodPos = null;
-                // 检查该位置是否在液体中
-                if (hmPos.getY() < world.getLogicalHeight() && !world.getFluidState(hmPos.below()).is(FluidTags.WATER)||world.getFluidState(hmPos.below()).is(FluidTags.LAVA)) {
+                // Check if the position is in liquid
+                BlockPos belowPos = hmPos.below();
+                if (hmPos.getY() < world.getLogicalHeight() &&
+                        !(world.getFluidState(belowPos).is(FluidTags.WATER) || world.getFluidState(belowPos).is(FluidTags.LAVA))) {
                     goodPos = hmPos;
                 } else {
                     // broken heightmap (nether, other mod dimensions)
@@ -274,7 +275,7 @@ public class TeleportingCommands {
     private static int jump(CommandSourceStack source) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
 
-        BlockHitResult res = BlockUtil.getFocusedBlock(player, source.getServer().getPlayerList().getViewDistance() * 16)
+        BlockHitResult res = BlockUtil.getFocusedBlock(player, Objects.requireNonNull(player.getServer()).getPlayerList().getViewDistance() * 16)
                 .orElseThrow(KitCommand.NOT_LOOKING_AT_BLOCK::create);
         // want to land the player on top of the focused block, so scan up as far as needed
         BlockPos.MutableBlockPos mPos = res.getBlockPos().above().mutable();
@@ -288,7 +289,6 @@ public class TeleportingCommands {
         player.teleportTo(vec.x(), vec.y(), vec.z());
         return 0;
     }
-
 
     private static boolean isEmptyShape(Level level, BlockPos pos) {
         return level.getBlockState(pos).getCollisionShape(level, pos).isEmpty();
